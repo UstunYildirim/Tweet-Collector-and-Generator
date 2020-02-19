@@ -9,6 +9,7 @@ import numpy as np
 import random
 import sys
 import io
+import os
 from KerasModel import modelFileName, maxlen, getCharSet
 
 # use cleaned tweets
@@ -20,23 +21,23 @@ print('total chars:', len(chars))
 char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
 
+#tweets = text.split(os.linesep)
+
 # cut the text in semi-redundant sequences of maxlen characters
-step = 1000
+step = 512
 sentences = []
-next_chars = []
 for i in range(0, len(text) - maxlen, step):
-    sentences.append(text[i: i + maxlen])
-    next_chars.append(text[i + maxlen])
+    sentences.append(text[i: i + maxlen + 1])
 print('nb sequences:', len(sentences))
 
 print('Vectorization...')
-x = np.zeros((len(sentences), maxlen, len(chars)), dtype=np.bool)
-y = np.zeros((len(sentences), len(chars)), dtype=np.bool)
+x = np.zeros((len(sentences), maxlen+1, len(chars)), dtype=np.bool)
 for i, sentence in enumerate(sentences):
     for t, char in enumerate(sentence):
         x[i, t, char_indices[char]] = 1
-    y[i, char_indices[next_chars[i]]] = 1
 
+y = x[:,1:,:]
+x = x[:,:-1,:]
 
 # load the model:
 model = load_model(modelFileName)
@@ -73,6 +74,7 @@ def on_epoch_end(epoch, _):
                 x_pred[0, t, char_indices[char]] = 1.
 
             preds = model.predict(x_pred, verbose=0)[0]
+            preds = preds[-1,:]
             next_index = sample(preds, diversity)
             next_char = indices_char[next_index]
 
