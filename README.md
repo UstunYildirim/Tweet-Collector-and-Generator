@@ -10,6 +10,7 @@ For this purpose, you may use
   - cleanTweets.py to clean up tweets first
   - KerasModel.py to generate a new model
   - KerasTraining.py to train and generate new tweets.
+  - KerasGenerate.py to generate new tweets with a given diversity and seed
 
 Initial versions of KerasModel.py and KerasTraining.py are based on Keras' example which can be found in https://github.com/keras-team/keras/blob/master/examples/lstm_text_generation.py . However, the architecture has major differences at the moment.
 
