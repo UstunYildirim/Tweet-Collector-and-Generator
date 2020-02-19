@@ -3,11 +3,8 @@
 # adapted from https://github.com/keras-team/keras/blob/master/examples/lstm_text_generation.py
 
 from __future__ import print_function
-from keras.callbacks import LambdaCallback, EarlyStopping
-from keras.models import Sequential, load_model
-from keras.layers import Dense
-from keras.layers import LSTM
-from keras.optimizers import RMSprop
+from keras.callbacks import LambdaCallback, EarlyStopping, ReduceLROnPlateau
+from keras.models import load_model
 import numpy as np
 import random
 import sys
@@ -89,14 +86,18 @@ def on_epoch_end(epoch, _):
 print_callback = LambdaCallback(on_epoch_end=on_epoch_end)
 early_stop = EarlyStopping(monitor='loss',
         min_delta=0,
-        patience=2,
+        patience=1,
         verbose=0,
         mode='auto',
         baseline=None,
         restore_best_weights=True)
+reduce_lr = ReduceLROnPlateau(monitor='loss',
+        factor=0.3,
+        patience=0,
+        min_lr=0.000001)
 
 model.fit(x, y,
-          batch_size=128,
+          batch_size=64,
           epochs=60,
           callbacks=[print_callback, early_stop])
 

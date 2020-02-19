@@ -11,7 +11,7 @@ import io
 
 modelFileName = 'model.h5'
 
-maxlen = 50 # time steps for the LSTM
+maxlen = 10 # time steps for the LSTM
 
 def getCharSet(text):
     return sorted(list(set(text)))
