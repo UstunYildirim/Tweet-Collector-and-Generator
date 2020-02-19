@@ -10,7 +10,9 @@ import io
 
 modelFileName = 'model.h5'
 
-maxlen = 12 # time steps for the LSTM
+maxlen = 10 # time steps for the LSTM
+unitPerChar = 16
+units = maxlen*unitPerChar
 
 def getCharSet(text):
     return sorted(list(set(text)))
@@ -26,10 +28,9 @@ if __name__ == '__main__':
     # build the model: a single LSTM
     print('Build model...')
     model = Sequential()
-    units = maxlen*16
     model.add(LSTM(units, input_shape=(maxlen, len(chars)), return_sequences=True))
     model.add(Permute((2,1)))
-    model.add(LocallyConnected1D(len(chars), (units//maxlen), strides=(units//maxlen)-1, activation='softmax'))
+    model.add(LocallyConnected1D(len(chars), unitPerChar, strides=unitPerChar, activation='softmax'))
 
     optimizer = Adam(learning_rate=0.01)
     model.compile(loss='categorical_crossentropy', optimizer=optimizer)
